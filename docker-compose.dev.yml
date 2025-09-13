@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  frontend:
+    image: vote-app-frontend:dev
+    container_name: voteapp_frontend_dev
+    command: npm run dev
+    working_dir: /usr/src/app
+    volumes:
+      - ./:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://host.docker.internal:4000}
+    depends_on:
+      - backend  # optional, if you also run backend in compose

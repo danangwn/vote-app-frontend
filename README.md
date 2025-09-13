@@ -1,8 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Vote App Frontend
+
+This is the frontend service for the Vote App built with Next.js and TypeScript.
+
+---
 
 ## Getting Started
 
-First, run the development server:
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/danangwn/vote-app-frontend.git
+cd vote-app-frontend
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+# or
+yarn
+# or
+pnpm install
+```
+
+### 3. Configure environment variables
+
+Copy the example file and update with your values:
+
+```bash
+cp env.example .env.local
+```
+
+Edit `.env.local`, example:
+
+```
+NEXT_PUBLIC_API_BASE_URL=https://api.your-backend.com
+# example keys you might need:
+# NEXT_PUBLIC_AUTH_TOKEN_KEY=your_auth_key
+```
+
+### 4. Run the app locally
 
 ```bash
 npm run dev
@@ -10,27 +47,79 @@ npm run dev
 yarn dev
 # or
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Frontend is available at:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## Run with Docker (if set up)
 
-To learn more about Next.js, take a look at the following resources:
+If you have a Docker setup (optional):
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Copy the env file:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+    ```bash
+    cp env.example .env.local
+    ```
 
-## Deploy on Vercel
+2. Build and start:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+    ```bash
+    docker-compose up --build -d
+    ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. Stop services:
+
+    ```bash
+    docker-compose down
+    ```
+
+---
+
+## ✅ Notes
+
+- The frontend expects an API backend; make sure your backend is running and the `NEXT_PUBLIC_API_BASE_URL` is correctly configured.
+- Use strong secrets / tokens in your env variables.
+- If building for production, do `npm run build` then `npm run start`.
+
+---
+
+## Available Scripts
+
+| Script   | Description                           |
+|----------|---------------------------------------|
+| `dev`    | Run development server                |
+| `build`  | Build app for production              |
+| `start`  | Start app in production mode          |
+| `lint`   | Linting (if ESLint / other tools in use)|
+
+---
+
+## Project Structure (high-level)
+
+```
+.
+├─ app/                # Next.js App Router pages & layouts
+├─ public/             # Static public files (images, icons, etc.)
+├─ src/                # Source code
+├─ styles/             # CSS / styling / global styles
+├─ package.json
+├─ tsconfig.json
+├─ .env.local
+└─ README.md
+```
+
+---
+
+## License
+
+Specify your license here, e.g.:
+
+```
+MIT © Your Name
+```

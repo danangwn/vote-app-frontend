@@ -11,7 +11,7 @@ function parseJwt(token: string | null) {
     if (parts.length !== 3) return null;
     const payload = parts[1];
     const b64 = payload.replace(/-/g, "+").replace(/_/g, "/");
-    const padded = b64.padEnd(b64.length + (4 - (b64.length % 4)) % 4, "=");
+    const padded = b64.padEnd(b64.length + ((4 - (b64.length % 4)) % 4), "=");
     const json = atob(padded);
     return JSON.parse(json);
   } catch {
@@ -145,11 +145,15 @@ export default function HomePage() {
 
       if (!res.ok) {
         const errBody = await res.json().catch(() => null);
-        throw new Error(errBody?.message ?? `Failed to load options (${res.status})`);
+        throw new Error(
+          errBody?.message ?? `Failed to load options (${res.status})`
+        );
       }
 
       const data = await res.json();
-      const list: any[] = Array.isArray(data) ? data : data.items ?? data.options ?? [];
+      const list: any[] = Array.isArray(data)
+        ? data
+        : data.items ?? data.options ?? [];
 
       const normalized: Option[] = list.map((o: any) => ({
         id: String(o.optionId ?? o.id ?? o._id ?? Math.random()),
@@ -199,8 +203,8 @@ export default function HomePage() {
       if (selected === "other") {
         // use API shape: text + detail_text
         body = {
-          customText : freeTitle.trim(),
-          detailText : freeDetail.trim(),
+          customText: freeTitle.trim(),
+          detailText: freeDetail.trim(),
         };
       } else {
         body = { optionId: selected };
@@ -217,11 +221,18 @@ export default function HomePage() {
 
       if (!res.ok) {
         const errBody = await res.json().catch(() => null);
-        throw new Error(errBody?.message ?? `Failed to submit vote (${res.status})`);
+        throw new Error(
+          errBody?.message ?? `Failed to submit vote (${res.status})`
+        );
       }
 
       const resp = await res.json().catch(() => null);
-      setMessage(resp?.message ?? (selected === "other" ? `Submitted custom option: "${body.text}"` : `Submitted vote`));
+      setMessage(
+        resp?.message ??
+          (selected === "other"
+            ? `Submitted custom option: "${body.text}"`
+            : `Submitted vote`)
+      );
       // reload options in case server-side data changes
       void loadOptions();
 
@@ -256,15 +267,19 @@ export default function HomePage() {
       });
       if (!res.ok) {
         const errBody = await res.json().catch(() => null);
-        throw new Error(errBody?.message ?? `Failed to fetch results (${res.status})`);
+        throw new Error(
+          errBody?.message ?? `Failed to fetch results (${res.status})`
+        );
       }
       const data = await res.json();
 
       const resultShape: ResultsShape = { raw: data };
 
       // server may provide totalUsers / totalVoted
-      if (typeof data.totalUsers === "number") resultShape.totalUsers = data.totalUsers;
-      if (typeof data.totalVoted === "number") resultShape.totalVoted = data.totalVoted;
+      if (typeof data.totalUsers === "number")
+        resultShape.totalUsers = data.totalUsers;
+      if (typeof data.totalVoted === "number")
+        resultShape.totalVoted = data.totalVoted;
 
       // server might return options array with counts and percentOfVoters
       if (Array.isArray(data.options)) {
@@ -273,13 +288,24 @@ export default function HomePage() {
           text: o.text ?? o.title ?? o.name ?? "",
           detail_text: o.detail_text ?? o.detail ?? o.description ?? "",
           // account for various field names
-          count: typeof o.votes === "number" ? o.votes : typeof o.count === "number" ? o.count : Number(o.votes ?? o.count ?? 0),
-          percentOfVoters: typeof o.percentOfVoters === "number" ? o.percentOfVoters : undefined,
+          count:
+            typeof o.votes === "number"
+              ? o.votes
+              : typeof o.count === "number"
+              ? o.count
+              : Number(o.votes ?? o.count ?? 0),
+          percentOfVoters:
+            typeof o.percentOfVoters === "number"
+              ? o.percentOfVoters
+              : undefined,
         }));
       }
 
       // accept keyed votes object (data.votes or data.counts)
-      if (!resultShape.options && (data.votes || data.counts || typeof data === "object")) {
+      if (
+        !resultShape.options &&
+        (data.votes || data.counts || typeof data === "object")
+      ) {
         if (data.votes && typeof data.votes === "object") {
           resultShape.counts = data.votes;
         } else if (data.counts && typeof data.counts === "object") {
@@ -298,13 +324,25 @@ export default function HomePage() {
 
       // free text lists - accept multiple possible keys
       if (Array.isArray(data.freeTexts)) {
-        resultShape.freeTexts = data.freeTexts.map((f: any) => ({ text: f.text ?? f.customText ?? f.title ?? "", detail_text: f.detail_text ?? f.customDetail ?? f.detail ?? "" }));
+        resultShape.freeTexts = data.freeTexts.map((f: any) => ({
+          text: f.text ?? f.customText ?? f.title ?? "",
+          detail_text: f.detail_text ?? f.customDetail ?? f.detail ?? "",
+        }));
       } else if (Array.isArray(data.free_texts)) {
-        resultShape.freeTexts = data.free_texts.map((f: any) => ({ text: f.text ?? f.customText ?? f.title ?? "", detail_text: f.detail_text ?? f.customDetail ?? f.detail ?? "" }));
+        resultShape.freeTexts = data.free_texts.map((f: any) => ({
+          text: f.text ?? f.customText ?? f.title ?? "",
+          detail_text: f.detail_text ?? f.customDetail ?? f.detail ?? "",
+        }));
       } else if (Array.isArray(data.freeText)) {
-        resultShape.freeTexts = data.freeText.map((f: any) => ({ text: f.text ?? f.customText ?? f.title ?? "", detail_text: f.detail_text ?? f.customDetail ?? f.detail ?? "" }));
+        resultShape.freeTexts = data.freeText.map((f: any) => ({
+          text: f.text ?? f.customText ?? f.title ?? "",
+          detail_text: f.detail_text ?? f.customDetail ?? f.detail ?? "",
+        }));
       } else if (Array.isArray((data as any).customs)) {
-        resultShape.freeTexts = (data as any).customs.map((f: any) => ({ text: f.customText ?? f.text ?? "", detail_text: f.customDetail ?? f.customDetail ?? "" }));
+        resultShape.freeTexts = (data as any).customs.map((f: any) => ({
+          text: f.customText ?? f.text ?? "",
+          detail_text: f.customDetail ?? f.customDetail ?? "",
+        }));
       }
 
       setResults(resultShape);
@@ -392,20 +430,28 @@ export default function HomePage() {
           <h2 className="mb-4 text-lg font-bold text-black">Voting</h2>
 
           {message && (
-            <div className="mb-4 rounded-md bg-yellow-50 p-3 text-sm text-black">{message}</div>
+            <div className="mb-4 rounded-md bg-yellow-50 p-3 text-sm text-black">
+              {message}
+            </div>
           )}
 
           {/* If user already voted -> show empty state */}
           {hasVoted ? (
             <div className="min-h-[200px] flex flex-col items-center justify-center border rounded-md p-6 text-center">
-              <div className="text-lg font-semibold text-black mb-2">You already vote</div>
-              <div className="text-sm text-gray-700 mb-4">Thank you for participating.</div>
+              <div className="text-lg font-semibold text-black mb-2">
+                You already vote
+              </div>
+              <div className="text-sm text-gray-700 mb-4">
+                Thank you for participating.
+              </div>
             </div>
           ) : (
             /* else show voting form */
             <form onSubmit={handleSubmit} className="space-y-5">
               <fieldset>
-                <legend className="mb-3 text-sm font-semibold text-black">Choose one option</legend>
+                <legend className="mb-3 text-sm font-semibold text-black">
+                  Choose one option
+                </legend>
 
                 <div className="space-y-3">
                   {loadingOptions ? (
@@ -422,19 +468,29 @@ export default function HomePage() {
                             className="mt-1"
                           />
                           <div>
-                            <div className="font-bold text-black">{opt.text}</div>
-                            {opt.detail_text ? <div className="text-sm text-black">{opt.detail_text}</div> : null}
+                            <div className="font-bold text-black">
+                              {opt.text}
+                            </div>
+                            {opt.detail_text ? (
+                              <div className="text-sm text-black">
+                                {opt.detail_text}
+                              </div>
+                            ) : null}
                           </div>
                         </label>
 
                         {/* If this option is Other, show the free-text panel only when selected */}
                         {opt.isOther && (
                           <div
-                            className={`transition-all duration-200 overflow-hidden px-3 ${selected === opt.id ? "max-h-96 py-3" : "max-h-0"}`}
+                            className={`transition-all duration-200 overflow-hidden px-3 ${
+                              selected === opt.id ? "max-h-96 py-3" : "max-h-0"
+                            }`}
                             aria-hidden={selected !== opt.id}
                           >
                             <div className="rounded-md border p-3 bg-gray-50">
-                              <div className="mb-2 text-sm font-semibold text-black">Other / Free text</div>
+                              <div className="mb-2 text-sm font-semibold text-black">
+                                Other / Free text
+                              </div>
                               <input
                                 placeholder="Your option title"
                                 value={freeTitle}
@@ -447,7 +503,10 @@ export default function HomePage() {
                                 onChange={(e) => setFreeDetail(e.target.value)}
                                 className="min-h-[80px] w-full resize-y rounded-md border border-gray-300 p-2 text-black"
                               />
-                              <div className="mt-2 text-xs text-gray-600">Note: free text will be submitted only when selecting the <strong>Other</strong> option.</div>
+                              <div className="mt-2 text-xs text-gray-600">
+                                Note: free text will be submitted only when
+                                selecting the <strong>Other</strong> option.
+                              </div>
                             </div>
                           </div>
                         )}
@@ -490,7 +549,10 @@ export default function HomePage() {
           <div className="mx-4 w-full max-w-3xl rounded-lg bg-white p-6 shadow-lg text-black">
             <div className="flex items-start justify-between">
               <h3 className="text-lg font-semibold">Voting Results</h3>
-              <button onClick={() => setResultsModalOpen(false)} className="text-sm text-black rounded border px-2 py-1 hover:bg-gray-100">
+              <button
+                onClick={() => setResultsModalOpen(false)}
+                className="text-sm text-black rounded border px-2 py-1 hover:bg-gray-100"
+              >
                 Close
               </button>
             </div>
@@ -504,14 +566,23 @@ export default function HomePage() {
                   <div className="flex items-center justify-between">
                     <div className="text-sm text-black">
                       Voted: <strong>{results.totalVoted ?? totalVotes}</strong>
-                      {typeof results.totalUsers === "number" ? <> of <strong>{results.totalUsers}</strong> users</> : null}
+                      {typeof results.totalUsers === "number" ? (
+                        <>
+                          {" "}
+                          of <strong>{results.totalUsers}</strong> users
+                        </>
+                      ) : null}
                     </div>
                     <div className="text-sm text-black">
                       {(() => {
                         const tv = results.totalVoted ?? totalVotes;
-                        const tu = typeof results.totalUsers === "number" ? results.totalUsers : undefined;
+                        const tu =
+                          typeof results.totalUsers === "number"
+                            ? results.totalUsers
+                            : undefined;
                         if (!tv) return null;
-                        if (tu) return `Turnout: ${Math.round((tv / tu) * 100)}%`;
+                        if (tu)
+                          return `Turnout: ${Math.round((tv / tu) * 100)}%`;
                         return null;
                       })()}
                     </div>
@@ -526,20 +597,37 @@ export default function HomePage() {
                         {results.options.map((o, i) => {
                           const count = o.count ?? 0;
                           // prefer server percentOfVoters if provided
-                          const pct = typeof o.percentOfVoters === "number"
-                            ? Math.round(o.percentOfVoters)
-                            : (totalVotes > 0 ? Math.round((count / totalVotes) * 100) : 0);
+                          const pct =
+                            typeof o.percentOfVoters === "number"
+                              ? Math.round(o.percentOfVoters)
+                              : totalVotes > 0
+                              ? Math.round((count / totalVotes) * 100)
+                              : 0;
                           return (
-                            <div key={o.optionId ?? `${i}`} className="space-y-1">
+                            <div
+                              key={o.optionId ?? `${i}`}
+                              className="space-y-1"
+                            >
                               <div className="flex items-center justify-between text-sm">
                                 <div>
-                                  <div className="font-semibold text-black">{o.text || `Option ${i + 1}`}</div>
-                                  {o.detail_text ? <div className="text-xs text-black">{o.detail_text}</div> : null}
+                                  <div className="font-semibold text-black">
+                                    {o.text || `Option ${i + 1}`}
+                                  </div>
+                                  {o.detail_text ? (
+                                    <div className="text-xs text-black">
+                                      {o.detail_text}
+                                    </div>
+                                  ) : null}
                                 </div>
-                                <div className="text-sm text-black">{count} ({pct}%)</div>
+                                <div className="text-sm text-black">
+                                  {count} ({pct}%)
+                                </div>
                               </div>
                               <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
-                                <div style={{ width: `${pct}%` }} className="h-2 bg-blue-600" />
+                                <div
+                                  style={{ width: `${pct}%` }}
+                                  className="h-2 bg-blue-600"
+                                />
                               </div>
                             </div>
                           );
@@ -549,23 +637,35 @@ export default function HomePage() {
                       <div className="space-y-3">
                         {Object.entries(results.counts).map(([k, v]) => {
                           const count = v ?? 0;
-                          const pct = totalVotes > 0 ? Math.round((count / totalVotes) * 100) : 0;
+                          const pct =
+                            totalVotes > 0
+                              ? Math.round((count / totalVotes) * 100)
+                              : 0;
                           const label = optionLabelForId(k) ?? k;
                           return (
                             <div key={k} className="space-y-1">
                               <div className="flex items-center justify-between text-sm">
-                                <div className="font-semibold text-black">{label}</div>
-                                <div className="text-sm text-black">{count} ({pct}%)</div>
+                                <div className="font-semibold text-black">
+                                  {label}
+                                </div>
+                                <div className="text-sm text-black">
+                                  {count} ({pct}%)
+                                </div>
                               </div>
                               <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
-                                <div style={{ width: `${pct}%` }} className="h-2 bg-blue-600" />
+                                <div
+                                  style={{ width: `${pct}%` }}
+                                  className="h-2 bg-blue-600"
+                                />
                               </div>
                             </div>
                           );
                         })}
                       </div>
                     ) : (
-                      <div className="text-sm text-black">No option counts available.</div>
+                      <div className="text-sm text-black">
+                        No option counts available.
+                      </div>
                     )}
                   </div>
                 </>
