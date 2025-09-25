@@ -12,7 +12,7 @@ type User = {
   voteStatus?: boolean;
 };
 
-const backendBase = "http://localhost:4000";
+const backendBase = process.env.NEXT_PUBLIC_API_BASE;
 
 /**
  * Portal modal (stable identity). onClose optional.

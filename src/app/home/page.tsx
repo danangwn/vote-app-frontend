@@ -43,7 +43,7 @@ type ResultsShape = {
   raw?: any;
 };
 
-const backendBase = "http://localhost:4000";
+const backendBase = process.env.NEXT_PUBLIC_API_BASE;
 
 export default function HomePage() {
   const router = useRouter();
