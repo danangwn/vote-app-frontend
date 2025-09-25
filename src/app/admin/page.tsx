@@ -236,7 +236,7 @@ export default function AdminUsersPage() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(`${backendBase}/api/users`, {
+        const res = await fetch(`${backendBase}api/users`, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("token") ?? ""}`,
@@ -311,7 +311,7 @@ export default function AdminUsersPage() {
       try {
         if (editingUser) {
           // EDIT: only name (self) or name+role (others) as enforced by form
-          const res = await fetch(`${backendBase}/api/users/${editingUser._id}`, {
+          const res = await fetch(`${backendBase}api/users/${editingUser._id}`, {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
@@ -326,7 +326,7 @@ export default function AdminUsersPage() {
           await fetchUsers({ force: true });
         } else {
           // ADD -> register endpoint
-          const res = await fetch(`${backendBase}/api/auth/register`, {
+          const res = await fetch(`${backendBase}api/auth/register`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ name: payload.name, email: payload.email, role: payload.role, password: payload.password }),
@@ -354,7 +354,7 @@ export default function AdminUsersPage() {
     setSubmitting(true);
     setError(null);
     try {
-      const res = await fetch(`${backendBase}/api/users/${deletingUser._id}`, {
+      const res = await fetch(`${backendBase}api/users/${deletingUser._id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

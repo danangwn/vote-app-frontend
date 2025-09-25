@@ -136,7 +136,7 @@ export default function HomePage() {
     setLoadingOptions(true);
     setMessage(null);
     try {
-      const res = await fetch(`${backendBase}/api/votes/options/main`, {
+      const res = await fetch(`${backendBase}api/votes/options/main`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token") ?? ""}`,
@@ -198,7 +198,7 @@ export default function HomePage() {
 
     setSubmitting(true);
     try {
-      const url = `${backendBase}/api/votes/submit`;
+      const url = `${backendBase}api/votes/submit`;
       let body: any;
       if (selected === "other") {
         // use API shape: text + detail_text
@@ -259,7 +259,7 @@ export default function HomePage() {
     setResults(null);
     setResultsLoading(true);
     try {
-      const res = await fetch(`${backendBase}/api/votes/results`, {
+      const res = await fetch(`${backendBase}api/votes/results`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token") ?? ""}`,
